@@ -1,0 +1,63 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: db-data, namespace: freva }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: "20Gi" } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: db-logs, namespace: freva }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: "2Gi" } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: mongo-data, namespace: freva }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: "20Gi" } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: mongo-logs, namespace: freva }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: "2Gi" } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: solr-data, namespace: freva }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: "20Gi" } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: solr-logs, namespace: freva }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: "2Gi" } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: web-config, namespace: freva }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: "100Mi" } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: web-logs, namespace: freva }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: "2Gi" } }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: { name: freva-rest-logs, namespace: freva }
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: { requests: { storage: "2Gi" } }
