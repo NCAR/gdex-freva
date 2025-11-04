@@ -9,16 +9,38 @@ spec:
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: cache-server, namespace: freva }
+metadata:
+  name: cache-server
+  namespace: freva
+  labels:
+    app: freva-cache-server
+    app.kubernetes.io/name: freva
+    app.kubernetes.io/instance: cache-server
+    app.kubernetes.io/component: data-loader
+    app.kubernetes.io/part-of: freva
+    app.kubernetes.io/version: 7.4.0
+    app.kubernetes.io/managed-by: ansible
+    freva.org/stateful: false
+    freva.org/tier: database
 spec:
   replicas: 1
-  selector: { matchLabels: { app: cache-server } }
+  selector: { matchLabels: { app: freva-cache-server } }
   template:
-    metadata: { labels: { app: cache-server } }
+    metadata:
+      labels:
+        app: freva-cache-server
+        app.kubernetes.io/name: freva
+        app.kubernetes.io/instance: cache-server
+        app.kubernetes.io/component: data-loader
+        app.kubernetes.io/part-of: freva
+        app.kubernetes.io/version: 7.4.0
+        app.kubernetes.io/managed-by: ansible
+        freva.org/stateful: true
+        freva.org/tier: database
     spec:
       securityContext: { fsGroup: 0 }
       containers:
-        - name: redis
+        - name: cache-server
           image: ghcr.io/freva-org/freva-redis:7.4.0
           imagePullPolicy: IfNotPresent
           ports: [{ containerPort: 6379, name: redis }]

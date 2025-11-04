@@ -1,7 +1,19 @@
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: database-server, namespace: freva }
+metadata:
+  name: database-server
+  namespace: freva
+  labels:
+    app: freva-database-server
+    app.kubernetes.io/name: freva
+    app.kubernetes.io/instance: database-server
+    app.kubernetes.io/component: web-app
+    app.kubernetes.io/part-of: freva
+    app.kubernetes.io/version: 9.3.0
+    app.kubernetes.io/managed-by: ansible
+    freva.org/stateful: true
+    freva.org/tier: database
 spec:
   type: ClusterIP
   selector: { app: database-server }
@@ -9,13 +21,37 @@ spec:
 ---
 apiVersion: apps/v1
 kind: StatefulSet
-metadata: { name: database-server, namespace: freva }
+metadata:
+  name: database-server
+  namespace: freva
+  labels:
+    app: freva-database-server
+    app.kubernetes.io/name: freva
+    app.kubernetes.io/instance: database-server
+    app.kubernetes.io/component: web-app
+    app.kubernetes.io/part-of: freva
+    app.kubernetes.io/version: 9.3.0
+    app.kubernetes.io/managed-by: ansible
+    freva.org/stateful: true
+    freva.org/tier: database
 spec:
   serviceName: database-server
   replicas: 1
   selector: { matchLabels: { app: database-server } }
   template:
-    metadata: { labels: { app: database-server } }
+    metadata:
+      name: database-server
+      namespace: freva
+      labels:
+        app: freva-database-server
+        app.kubernetes.io/name: freva
+        app.kubernetes.io/instance: database-server
+        app.kubernetes.io/component: web-app
+        app.kubernetes.io/part-of: freva
+        app.kubernetes.io/version: 9.3.0
+        app.kubernetes.io/managed-by: ansible
+        freva.org/stateful: true
+        freva.org/tier: database
     spec:
       securityContext: { fsGroup: 0 }
       containers:
