@@ -1,0 +1,37 @@
+---
+# --- Vault/Secrets management ---
+secrets_file: "secrets.yml.vault"
+vault_id: "vault-pass.txt"
+
+# --- K8s target ---
+k8s_namespace: "freva"
+k8s_secret_name: "freva-secrets"
+
+# --- Instance / environment metadata for labeling ---
+freva_instance: "freva"
+
+# Where to also write a manifest (for auditing/commits)
+manifest_path: "build/freva-secrets.yaml"
+
+# --- Keys we manage ---
+managed_keys:
+  - ADMIN_USER
+  - ADMIN_PASSWORD
+  - OIDC_CLIENT_SECRET
+
+# --- Username and password categories (for generation) ---
+username_keys:
+  - REDIS_USERNAME
+  - FREVA_REST_DB_USER
+  - MONGO_APP_USER
+
+password_keys:
+  - MYSQL_PASSWORD
+  - REDIS_PASSWORD
+  - OIDC_CLIENT_SECRET
+  - FREVA_REST_DB_PASSWORD
+  - MONGO_APP_PASSWORD
+
+# Optional: add your own custom keys that should be generated
+extra_username_keys: []
+extra_password_keys: []
