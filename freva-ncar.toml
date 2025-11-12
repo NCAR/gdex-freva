@@ -10,22 +10,6 @@ deployment_method = "k8s"
 
 ## Kubernetes deployment settings
 [kubernetes]
-## Set the hostname from where you are going to spin up the kubernetes cluster
-## if the deployment method was set to "k8s". This can either be your local
-## computer or a server.
-deploy_host = "localhost"
-
-## The `expose_method` defines how a service is made accessible externally.
-## Options: hostport, nodeport or lb (default).
-## hostport binds directly to the node port,
-## lb requires a load balancer to be configured.
-expose_method = "lb"
-
-
-## Set the `config_only` flag to true in order to only create k8s configurations
-## but not start any services (default: false)
-config_only = true
-
 ## Set the group ID for all volmes used by pods
 fs_group = 0
 
@@ -35,16 +19,130 @@ run_as_group = 0
 ## Set the user id
 run_as_user = 0
 
-## Set the sizes of the PVC volumes
-mysql_pvc_size = "20Gi"
-mysql_logs_pvc_size =  "2Gi"
-mongo_pvc_size = "20Gi"
-mongo_logs_pvc_size =  "2Gi"
-solr_pvc_size = "20Gi"
-solr_logs_pvc_size = "2Gi"
-web_logs_pvc_size = "2Gi"
-web_cfg_pvc_size = "100Mi"
-rest_logs_pvc_size = "2Gi"
+
+
+[kubernetes.ingress]
+## Specify the fully qualified domain host for ingress connections to the
+## cluster.
+fqdn = "k8s.ucar.edu"
+
+## Set the network ingress class name for external communication
+external_class_name = "nginx-external"
+## Set the network ingress class name for internal communication
+internal_class_name = "nginx-internal"
+
+## Any ingress annotations that are needed
+annotations = { "cert-manager.io/cluster-issuer" = "incommon" }
+
+
+## Set this to true you the cluster mangages server certs
+certs_managed = false
+
+### Set any tls_cert_secret name that should be used.
+tls_secret_name = "web-cert-secret"
+
+## Set the resource allocation for each service.
+## web: Django frontend (2 replicas recommended)
+[kubernetes.resources.web.requests]
+cpu = "600m"
+memory = "1Gi"
+[kubernetes.resources.web.limits]
+cpu = "1600m"
+memory = "2Gi"
+
+## cache-server: Redis (backing data-loader & web)
+[kubernetes.resources.cache-server.requests]
+cpu = "300m"
+memory = "512Mi"
+[kubernetes.resources.cache-server.limits]
+cpu = "1"
+memory = "2Gi"
+
+## data-loader-server: heavy lifting & serialization (2 replicas recommended)
+[kubernetes.resources.data-loader-server.requests]
+cpu = "500m"
+memory = "1Gi"
+[kubernetes.resources.data-loader-server.limits]
+cpu = "2"
+memory = "4Gi"
+
+## freva-rest-server: REST API (2 replicas recommended)
+[kubernetes.resources.freva-rest-server.requests]
+cpu = "600m"
+memory = "512Mi"
+[kubernetes.resources.freva-rest-server.limits]
+cpu = "1000m"
+memory = "1Gi"
+
+## database-server: MySQL
+[kubernetes.resources.database-server.requests]
+cpu = "500m"
+memory = "2Gi"
+[kubernetes.resources.database-server.limits]
+cpu = "2"
+memory = "4Gi"
+
+## mongo-server: metadata + jobs
+[kubernetes.resources.mongo-server.requests]
+cpu = "300m"
+memory = "1Gi"
+[kubernetes.resources.mongo-server.limits]
+cpu = "1500m"
+memory = "3Gi"
+
+## search-server: Apache Solr (main memory hog)
+[kubernetes.resources.search-server.requests]
+cpu = "1500m"
+memory = "8Gi"
+[kubernetes.resources.search-server.limits]
+cpu = "4"
+memory = "16Gi"
+
+## vault-server: HashiCorp Vault (small)
+[kubernetes.resources.vault-server.requests]
+cpu = "100m"
+memory = "256Mi"
+[kubernetes.resources.vault-server.limits]
+cpu = "300m"
+memory = "512Mi"
+
+[[kubernetes.external_volumes.data-loader]]
+driver = "nfs"
+mount_path = "/gpfs/csfs1/collections/rda"
+driver_options = { server = "gladedm1.ucar.edu", path = "/gpfs/csfs1/collections/rda", readOnly = 'true'}
+
+[kubernetes.external_volumes.web-ext]
+driver = "nfs"
+mount_path = "/gpfs/csfs1/work/mbergemann/"
+[kubernetes.external_volumes.web-ext.driver_options]
+server = "gladedm1.ucar.edu"
+path = "/gpfs/csfs1/work/mbergemann/"
+readOnly = 'true'
+
+[kubernetes.external_volumes.web-preview]
+driver = "nfs"
+mount_path = "/opt/freva/share/preview"
+[kubernetes.external_volumes.web-preview.driver_options]
+server = "gladedm1.ucar.edu"
+path = "/gpfs/csfs1/work/mbergemann/conda/work/share/preview"
+readOnly = 'true'
+
+
+## Set the pvc resource allocation for each service.
+[kubernetes.pvc.mysql]
+data_size = "20Gi"
+[kubernetes.pvc.mongo]
+data_size = "20Gi"
+[kubernetes.pvc.solr]
+data_size = "20Gi"
+[kubernetes.pvc.web]
+data_size = "5Gi"
+[kubernetes.pvc.web-ext]
+path = "/gpfs/csfs1/work/mbergemann"
+[kubernetes.pvc.ext-data]
+path =  "/gpfs/csfs1/collections/rda"
+[kubernetes.pvc.web-preview]
+path = "/gpfs/csfs1/work/mbergemann/conda/work/share/preview"
 
 ## Specify the path to the SSL certificate files used for secure connections
 ## to the vault server or as web certificates.
@@ -63,13 +161,13 @@ chain_keyfile = ""
 ## Config variables for the database service.
 
 ## Specify the host name were the database server should be deployed
-db_host = "localhost"
+db_host = "freva-db.k8s.ucar.edu"
 
 ## The freva infrastructure uitilises a small vault server that stores
 ## database secrets for client connections. You can specify the host name
 ## where this server should be running. If you don't set it (default)
 ## the vault server will be deployed on the database host.
-vault_host = "localhost"
+vault_host = "freva-vault.k8s.ucar.edu"
 
 ## The database runs in a Docker container. You can change the port
 ## that is exposed to the external network. Every DB connection from
@@ -86,7 +184,7 @@ db = "frevadb"
 ## that installs the services differ, instruct Ansible to use the
 ## specified username for SSH connections to the target server.
 ## If left blank, the current username will be used.
-ansible_user = "k204230"
+ansible_user = "admin"
 
 ## Set the become (sudo) username to change to for installing the services.
 ## Leave blank to utilise a non-privileged user-based installation.
@@ -97,41 +195,43 @@ ansible_become_user = "root"
 ## Ansible needs a Python 3 interpreter on the target server. This interpreter
 ## can be set for custom Python 3 instances. By default, Ansible will try
 ## to use the default Python interpreter path /usr/bin/python.
-ansible_python_interpreter = "/usr/bin/python3"
+ansible_python_interpreter = ""
 
 ## Indicate whether to empty any pre-existing folders/docker volumes.
 ## Useful for a truly fresh start (default: false).
 wipe = false
 
 ## Set the path where the permanent database data should be stored.
-## By default, this is set to /opt/freva/<project_name>/db_service.
+## By default, this is set to /opt/freva/.
+## NOTE: This directory will be used to store persisent data on conda based
+## deployments and creating docker-compose files.
 data_path = "/opt/freva"
 
 ## Set the username that will own all files created by the service such as
 ## database files etc. This can be useful if multiple users take turn in
 ## deploying and administering the service. The value of the username
 ## will default to the user that deploys the service
-admin_user = "b380001"
+admin_user = ""
 
 [freva_rest]
 ## Specify the host name were the ferva-rest-api server should be deployed
-freva_rest_host = "localhost"
+freva_rest_host = "ferva-api.k8s.ucar.edu"
 
 ## To search for data the freva-rest-api needs a metadata index service.
 ## Typically this services apache solr. You can set the host where this
 ## index server should be running at. Leave empty to deploy the service
 ## on the same host as the freva-rest-api
-search_server_host = "localhost"
+search_server_host = "na"
 
 ## Search statistics and user data related will be stored in a mongoDB
 # service You can set the host where the server should be running at.
 ## Leave empty to deploy the service on the same host as the freva-rest-api
-mongodb_server_host = "localhost"
+mongodb_server_host = "na"
 
 ### The the host name of the redis-cache, this cache is used for caching
 ### different kinds of data. If not set this will fall back to the host name
 ### of the rest-api server.
-redis_host = "localhost"
+redis_host = "na"
 
 ### Set the hostname(s) for the data-loading portal. The data-loading portal
 ### is a services that provisions data via zarr. The data-loading portal is
@@ -139,7 +239,7 @@ redis_host = "localhost"
 ### form a distributed memory. The first entry will be used as the master
 ### scheduler and the consecutive ones as workers. If you leave this blank
 ## then the service will be disabled.
-data_loader_portal_hosts = "localhost,localhost"
+data_loader_portal_hosts = "na,na"
 
 ## Set the amount of memory allocated to the search engine (Solr).
 solr_mem = "4g"
@@ -156,13 +256,13 @@ ansible_become_user = "root"
 ## Ansible needs a Python 3 interpreter on the target server. This interpreter
 ## can be set for custom Python 3 instances. By default, Ansible will try
 ## to use the default Python interpreter path /usr/bin/python.
-ansible_python_interpreter = "/usr/bin/python3"
+ansible_python_interpreter = ""
 
 ## If the username running the deployment software and the username
 ## that installs the services differ, instruct Ansible to use the
 ## specified username for SSH connections to the target server.
 ## If left blank, the current username will be used.
-ansible_user = "k204230"
+ansible_user = "admin"
 
 ## Indicate whether to empty any pre-existing folders/docker volumes.
 ## Useful for a truly fresh start (default: false).
@@ -170,6 +270,8 @@ wipe = false
 
 ## Set the path where the permanent freva-rest data should be stored.
 ## By default, this is set to /opt/freva.
+## NOTE: This directory will be used to store persisent data on conda based
+## deployments and creating docker-compose files.
 data_path = "/opt/freva"
 
 ### Indicate whether or not the redis-caching services will be shared among
@@ -195,28 +297,28 @@ oidc_client_secret = ""
 ## database files etc. This can be useful if multiple users take turn in
 ## deploying and administering the service. The value of the username
 ## will default to the user that deploys the service
-admin_user = "b380001"
+admin_user = ""
 
 # A dict of claim-based filters in {<key1.key2> = [<pattern>]}. Each filter
 # matches if the decoded JWT contains the specified claim
 # (e.g., group, role) and its value includes the given pattern. Patterns can
 # be plain substrings or regular expressions.
 # Nested claims are defined by '.' separation.
-oidc_token_claims = {scope = ["regiklim-users"]}
+oidc_token_claims = {scope = []}
 
 
 [core]
 ## Specify the host name were the client should be deployed
-core_host = "casper.hpc.ucar.edu"
+core_host = "localhost"
 
 ## List of users that can alter the configuration of the freva command line interface.
 ## If blank, the user that runs the deployment is chosen.
-admins = "k204230,b380001"
+admins = "mbergemann"
 
 ## The path where the core library should be installed.
 ## Conda is used for installing the core library. Setting this
 ## instructs Conda to install a new Conda environment into this folder.
-install_dir = "/home/k/k204230/freva-core"
+install_dir = "/gpfs/csfs1/work/mbergemann/conda"
 
 ## The directory where the project configuration files will be stored.
 ## This can be useful if you want to set up multiple freva instances with
@@ -268,7 +370,7 @@ ansible_become_user = ""
 ## that installs the services differ, instruct Ansible to use the
 ## specified username for SSH connections to the target server.
 ## If left blank, the current username will be used.
-ansible_user = "k204230"
+ansible_user = "mbergemann"
 
 ## Ansible needs a Python 3 interpreter on the target server. This interpreter
 ## can be set for custom Python 3 instances. By default, Ansible will try
@@ -290,7 +392,7 @@ wipe = false
 web_host = "localhost"
 
 ## Set the URL of the web user interface.
-project_website = "www.freva-delopyment.cloud.dkrz.de"
+project_website = "https://freva.k8s.ucar.edu"
 
 ## Freva can connect to a GPT service (that has to be set up seperately)
 ## you can set the <HOSTNAME>:<PORT> of this service - if configured.
@@ -306,49 +408,56 @@ ansible_python_interpreter = ""
 ## that installs the services differ, instruct Ansible to use the
 ## specified username for SSH connections to the target server.
 ## If left blank, the current username will be used.
-ansible_user = "k204230"
+ansible_user = "admin"
 
 ## Set the path where the permanent web data should be stored.
 ## By default, this is set to /opt/freva.
+## NOTE: This directory will be used to store persisent data on conda based
+## deployments and creating docker-compose files.
 data_path = "/opt/freva"
 
 ## Set the main HTML color scheme.
-main_color = "#f29631"
+main_color = "#121212"
 ## Set the HTML border colors.
-border_color = "#bc8000"
+border_color = "#1C1C1C"
 ## Set the HTML hover colors.
-hover_color = "#d48b3d"
+hover_color = "#2F2F2F"
 
 ## The "About Us" text is a small blurb about freva within the project.
-about_us_text = "This could be yours."
+about_us_text = "NCAR is a facility sponsored by the National Science Foundation (NSF)."
 
 ## Set the path to the institution logo. This should be the path to the logo
 ## as seen by the target system. Ensure this path exists on the target machine.
-institution_logo = " "
+institution_logo = "/gpfs/csfs1/work/mbergemann/conda/freva/web/nsf-logo.png"
 
 ## Set email addresses for contact points for users.
-contacts = "freva@dkrz.de"
+contacts = "datahelp@ucar.edu"
 
 ## Set the postal address, which will appear in the footer of the website.
-imprint = ["Freva", "German Climate Computing Centre (DKRZ)", "Bundesstr. 45a", "20146 Hamburg", "Germany"]
+imprint = ["2023-2024 UCAR", "Licensed under the Creative Commons CC-BY-SA 4.0." ]
 
 ## Here you can set a lengthy project description.
 ## You can also set a path to a file containing the information,
 ## like an HTML file.
-homepage_text = "Welcome to VASKEBJORN Climate Analytics, where data meets insight to drive sustainable solutions for a greener future. Our cutting-edge analytics platform empowers you with real-time information to understand and address the challenges posed by climate change. Dive into the world of Vaskebjorn and explore the dummy text below to get a glimpse of the impactful narratives we weave."
+homepage_text = """CISL is an innovation hub! We offer state-of-the-art computing resources,
+comprehensive data solutions, and pioneering research services.
+
+Our mission is to empower scientists, researchers, and institutions
+across the globe with the tools and expertise needed to unlock the
+mysteries of our planet's complex interconnected systems."""
 
 ## Set a one-line blurb of the project.
-homepage_heading = "VASKEBJORN - Visionary Analytics for Sustainable Knowledge Environment - Building Just Outcomes with Resilient Networks"
+homepage_heading = "Welcome to NCAR - CISL"
 
 ## Set the name of the project/institution, such as FUB, DWD, DKZ, etc.
-institution_name = "Freva"
+institution_name = "NCAR - Computational and Information Systems Lab"
 
 ## Set the workload manager scheduler host. The web app will log into this
 ## machine via SSH to submit plugin jobs.
-scheduler_host = ["levante.dkrz.de"]
+scheduler_host = ["caspar.hpc.ucar.edu"]
 
 ## Set the hosts that are allowed to execute WSGI code.
-allowed_hosts = ["localhost", "www.freva-deployment.drkz.de", "www.example.com"]
+allowed_hosts = ["www.freva.k8s.ucar.edu", "freva.k8s.ucar.edu"]
 
 ## Turn on/off debug mode on the website.
 debug = false
