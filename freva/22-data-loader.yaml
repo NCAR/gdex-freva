@@ -58,11 +58,11 @@ spec:
               value: cache-server
           volumeMounts:
             - name: data-1
-              mountPath: /gpfs/csfs1/collections/rda
+              mountPath: /gpfs/csfs1/collections/gdex
               readOnly: true
       volumes:
         - name: data-1
           nfs:
-            path: /gpfs/csfs1/collections/rda
+            path: /gpfs/csfs1/collections/gdex
             readOnly: true
             server: gladedm1.ucar.edu
