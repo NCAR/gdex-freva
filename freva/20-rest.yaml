@@ -55,7 +55,7 @@ spec:
       securityContext: { fsGroup: 0 }
       containers:
         - name: rest
-          image: ghcr.io/freva-org/freva-rest-api:2510.1.0
+          image: ghcr.io/freva-org/freva-rest-api:2510.1.2
           imagePullPolicy: IfNotPresent
           ports: [{ containerPort: 7777, name: http }]
           resources: {'limits': {'cpu': '1000m', 'memory': '1Gi'}, 'requests': {'cpu': '600m', 'memory': '512Mi'}}

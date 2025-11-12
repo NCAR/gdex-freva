@@ -36,7 +36,7 @@ spec:
       securityContext: { fsGroup: 0 }
       containers:
         - name: data-loader
-          image: ghcr.io/freva-org/freva-data-loader:2510.1.0
+          image: ghcr.io/freva-org/freva-data-loader:2510.1.2
           imagePullPolicy: IfNotPresent
           resources: {'limits': {'cpu': '2', 'memory': '4Gi'}, 'requests': {'cpu': '500m', 'memory': '1Gi'}}
           env:
