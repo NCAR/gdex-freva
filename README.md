@@ -1,5 +1,8 @@
 # GDEX Freva Deployment
 
+[Freva](https://freva-org.github.io) is a data search and analsys platform
+which is deployd on Cirrus at NCAR.
+
 This repository provides an initial test setup for deploying Freva on the NCAR
 Kubernetes environment. It serves as a proof of concept to explore and refine
 the future deployment approach.
@@ -16,10 +19,11 @@ solution; a more robust secret management approach will be introduced later.
 
 ## Setup of the Core Library on Casper
 
-The current design requires either the [freva-legacy] installation to run
+The current design requires either the
+[freva-legacy](https://freva-org.github.io/freva-legacy) installation to run
 analysis plugins or, if plugins are disabled, the configuration files required
 for the web application. To set up the legacy plugin library (core) and/or
-configure the web app, use the [deploy-freva] software.
+configure the web app, use the [deploy-freva](https://freva-admin.readthedocs.io) software.
 
 ### 1. Log in to Casper
 
@@ -170,13 +174,13 @@ mdc solr index <path-to>/index.yaml -sv freva-solr.k8s.ucar.edu
 ```
 
 For more information on the software and DRS configuration specifications, see
-the [metadata-crawler documentation].
+the [metadata-crawler documentation](https://metadata-crawler.readthedocs.io/chapter2-config/index.html)
 
 ---
 
 ## References
 
-- [freva-legacy]: (https://freva-org.github.io/freva-legacy)
-- [deploy-freva]: (https://freva-admin.readthedocs.io)
-- [metadata-crawler]: (https://metadata-crawler.readthedocs.io)
-- [metadata-crawler documentation]: (https://metadata-crawler.readthedocs.io)
+- [freva-legacy](https://freva-org.github.io/freva-legacy)
+- [deploy-freva](https://freva-admin.readthedocs.io)
+- [metadata-crawler](https://metadata-crawler.readthedocs.io)
+- [metadata-crawler documentation](https://metadata-crawler.readthedocs.io/chapter2-config/index.html)
