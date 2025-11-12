@@ -1,7 +1,19 @@
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: cache-server, namespace: freva }
+metadata:
+  name: cache-server
+  namespace: freva
+  labels:
+    app: cache-server
+    app.kubernetes.io/name: freva
+    app.kubernetes.io/instance: cache-server
+    app.kubernetes.io/component: data-loader
+    app.kubernetes.io/part-of: freva
+    app.kubernetes.io/version: 7.4.0
+    app.kubernetes.io/managed-by: ansible
+    freva.org/stateful: 'true'
+    freva.org/tier: database
 spec:
   type: ClusterIP
   selector: { app: cache-server }
@@ -13,29 +25,29 @@ metadata:
   name: cache-server
   namespace: freva
   labels:
-    app: freva-cache-server
+    app: cache-server
     app.kubernetes.io/name: freva
     app.kubernetes.io/instance: cache-server
     app.kubernetes.io/component: data-loader
     app.kubernetes.io/part-of: freva
     app.kubernetes.io/version: 7.4.0
     app.kubernetes.io/managed-by: ansible
-    freva.org/stateful: false
+    freva.org/stateful: 'false'
     freva.org/tier: database
 spec:
   replicas: 1
-  selector: { matchLabels: { app: freva-cache-server } }
+  selector: { matchLabels: { app: cache-server } }
   template:
     metadata:
       labels:
-        app: freva-cache-server
+        app: cache-server
         app.kubernetes.io/name: freva
         app.kubernetes.io/instance: cache-server
         app.kubernetes.io/component: data-loader
         app.kubernetes.io/part-of: freva
         app.kubernetes.io/version: 7.4.0
         app.kubernetes.io/managed-by: ansible
-        freva.org/stateful: true
+        freva.org/stateful: 'false'
         freva.org/tier: database
     spec:
       securityContext: { fsGroup: 0 }
@@ -44,6 +56,7 @@ spec:
           image: ghcr.io/freva-org/freva-redis:7.4.0
           imagePullPolicy: IfNotPresent
           ports: [{ containerPort: 6379, name: redis }]
+          resources: {'limits': {'cpu': '1', 'memory': '2Gi'}, 'requests': {'cpu': '300m', 'memory': '512Mi'}}
           env:
             - name: REDIS_USERNAME
               valueFrom: { secretKeyRef: { name: freva-secrets, key: REDIS_USERNAME } }

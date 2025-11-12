@@ -1,63 +1,96 @@
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
-metadata: { name: db-data, namespace: freva }
+metadata:
+  name: "solr-data"
+  namespace: "freva"
+  labels:
+    app.kubernetes.io/name: "freva"
+    app.kubernetes.io/instance: "rest-api"
+    app.kubernetes.io/component: "data"
+    freva.org/tier: "database"
 spec:
   accessModes: ["ReadWriteOnce"]
-  resources: { requests: { storage: "20Gi" } }
+  resources:
+    requests:
+      storage: "20Gi"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
-metadata: { name: db-logs, namespace: freva }
+metadata:
+  name: "mongo-data"
+  namespace: "freva"
+  labels:
+    app.kubernetes.io/name: "freva"
+    app.kubernetes.io/instance: "mongo-server"
+    app.kubernetes.io/component: "data"
+    freva.org/tier: "database"
 spec:
   accessModes: ["ReadWriteOnce"]
-  resources: { requests: { storage: "2Gi" } }
+  resources:
+    requests:
+      storage: "20Gi"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
-metadata: { name: mongo-data, namespace: freva }
+metadata:
+  name: "db-data"
+  namespace: "freva"
+  labels:
+    app.kubernetes.io/name: "freva"
+    app.kubernetes.io/instance: "database-server"
+    app.kubernetes.io/component: "data"
+    freva.org/tier: "database"
 spec:
   accessModes: ["ReadWriteOnce"]
-  resources: { requests: { storage: "20Gi" } }
+  resources:
+    requests:
+      storage: "20Gi"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
-metadata: { name: mongo-logs, namespace: freva }
+metadata:
+  name: "vault-data"
+  namespace: "freva"
+  labels:
+    app.kubernetes.io/name: "freva"
+    app.kubernetes.io/instance: "web-app"
+    app.kubernetes.io/component: "data"
+    freva.org/tier: "backend"
 spec:
   accessModes: ["ReadWriteOnce"]
-  resources: { requests: { storage: "2Gi" } }
+  resources:
+    requests:
+      storage: "500Mi"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
-metadata: { name: solr-data, namespace: freva }
+metadata:
+  name: "web-data"
+  namespace: "freva"
+  labels:
+    app.kubernetes.io/name: "freva"
+    app.kubernetes.io/instance: "web-app"
+    app.kubernetes.io/component: "data"
+    freva.org/tier: "backend"
 spec:
   accessModes: ["ReadWriteOnce"]
-  resources: { requests: { storage: "20Gi" } }
+  resources:
+    requests:
+      storage: "5Gi"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
-metadata: { name: solr-logs, namespace: freva }
+metadata:
+  name: "proxy-logs"
+  namespace: "freva"
+  labels:
+    app.kubernetes.io/name: "freva"
+    app.kubernetes.io/instance: "web-app"
+    app.kubernetes.io/component: "logs"
+    freva.org/tier: "frontend"
 spec:
   accessModes: ["ReadWriteOnce"]
-  resources: { requests: { storage: "2Gi" } }
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata: { name: web-config, namespace: freva }
-spec:
-  accessModes: ["ReadWriteOnce"]
-  resources: { requests: { storage: "100Mi" } }
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata: { name: web-logs, namespace: freva }
-spec:
-  accessModes: ["ReadWriteOnce"]
-  resources: { requests: { storage: "2Gi" } }
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata: { name: freva-rest-logs, namespace: freva }
-spec:
-  accessModes: ["ReadWriteOnce"]
-  resources: { requests: { storage: "2Gi" } }
+  resources:
+    requests:
+      storage: "500Mi"
