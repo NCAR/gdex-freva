@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/instance: data-loader-server
     app.kubernetes.io/component: rest-api
     app.kubernetes.io/part-of: freva
-    app.kubernetes.io/version: 2510.1.2
+    app.kubernetes.io/version: 2510.1.0
     app.kubernetes.io/managed-by: ansible
     freva.org/stateful: 'false'
     freva.org/tier: backend
@@ -28,7 +28,7 @@ spec:
         app.kubernetes.io/instance: data-loader-server
         app.kubernetes.io/component: rest-api
         app.kubernetes.io/part-of: freva
-        app.kubernetes.io/version: 2510.1.2
+        app.kubernetes.io/version: 2510.1.0
         app.kubernetes.io/managed-by: ansible
         freva.org/stateful: 'false'
         freva.org/tier: backend
@@ -36,7 +36,7 @@ spec:
       securityContext: { fsGroup: 0 }
       containers:
         - name: data-loader
-          image: ghcr.io/freva-org/freva-data-loader:2510.1.2
+          image: ghcr.io/freva-org/freva-data-loader:2510.1.0
           imagePullPolicy: IfNotPresent
           resources: {'limits': {'cpu': '2', 'memory': '4Gi'}, 'requests': {'cpu': '500m', 'memory': '1Gi'}}
           env:

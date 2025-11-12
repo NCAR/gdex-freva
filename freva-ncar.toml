@@ -108,15 +108,15 @@ memory = "512Mi"
 
 [[kubernetes.external_volumes.data-loader]]
 driver = "nfs"
-mount_path = "/gpfs/csfs1/collections/rda"
-driver_options = { server = "gladedm1.ucar.edu", path = "/gpfs/csfs1/collections/rda", readOnly = 'true'}
+mount_path = "/gpfs/csfs1/collections/gdex"
+driver_options = { server = "gladedm1.ucar.edu", path = "/gpfs/csfs1/collections/gdex", readOnly = 'true'}
 
 [kubernetes.external_volumes.web-ext]
 driver = "nfs"
-mount_path = "/gpfs/csfs1/work/mbergemann/"
+mount_path = "/gpfs/csfs1/work/gdexdata/"
 [kubernetes.external_volumes.web-ext.driver_options]
 server = "gladedm1.ucar.edu"
-path = "/gpfs/csfs1/work/mbergemann/"
+path = "/gpfs/csfs1/work/gdexdata/"
 readOnly = 'true'
 
 [kubernetes.external_volumes.web-preview]
@@ -124,7 +124,7 @@ driver = "nfs"
 mount_path = "/opt/freva/share/preview"
 [kubernetes.external_volumes.web-preview.driver_options]
 server = "gladedm1.ucar.edu"
-path = "/gpfs/csfs1/work/mbergemann/conda/work/share/preview"
+path = "/gpfs/csfs1/work/gdexdata/freva/share/preview"
 readOnly = 'true'
 
 
@@ -138,11 +138,11 @@ data_size = "20Gi"
 [kubernetes.pvc.web]
 data_size = "5Gi"
 [kubernetes.pvc.web-ext]
-path = "/gpfs/csfs1/work/mbergemann"
+path = "/gpfs/csfs1/work/gdexdata"
 [kubernetes.pvc.ext-data]
-path =  "/gpfs/csfs1/collections/rda"
+path =  "/gpfs/csfs1/collections/gdex"
 [kubernetes.pvc.web-preview]
-path = "/gpfs/csfs1/work/mbergemann/conda/work/share/preview"
+path = "/gpfs/csfs1/work/gdexdata/freva/share/preview"
 
 ## Specify the path to the SSL certificate files used for secure connections
 ## to the vault server or as web certificates.
@@ -313,25 +313,25 @@ core_host = "localhost"
 
 ## List of users that can alter the configuration of the freva command line interface.
 ## If blank, the user that runs the deployment is chosen.
-admins = "mbergemann"
+admins = "rpconroy"
 
 ## The path where the core library should be installed.
 ## Conda is used for installing the core library. Setting this
 ## instructs Conda to install a new Conda environment into this folder.
-install_dir = "/gpfs/csfs1/work/mbergemann/conda"
+install_dir = "/gpfs/csfs1/work/gdexdata/conda-env"
 
 ## The directory where the project configuration files will be stored.
 ## This can be useful if you want to set up multiple freva instances with
 ## the same software stack (Anaconda environment). Leave blank to use the
 ## same directory as anaconda installation directory.
-root_dir = ""
+root_dir = "/gpfs/csfs1/work/gdexdata/freva"
 
 ## If you do not wish to install a new freva Conda environment but only
 ## (re)configure an already installed system, you can set the `install`
 ## variable to false. This can be useful if you have a central instance
 ## of freva deployed and want to set up a project-specific configuration
 ## that uses this central instance.
-install = true
+install = false
 
 ## The directory where user-specific output will be stored.
 ## If left blank, it defaults to the folder that holds the project
@@ -370,7 +370,7 @@ ansible_become_user = ""
 ## that installs the services differ, instruct Ansible to use the
 ## specified username for SSH connections to the target server.
 ## If left blank, the current username will be used.
-ansible_user = "mbergemann"
+ansible_user = "rpconroy"
 
 ## Ansible needs a Python 3 interpreter on the target server. This interpreter
 ## can be set for custom Python 3 instances. By default, Ansible will try
@@ -428,7 +428,7 @@ about_us_text = "NCAR is a facility sponsored by the National Science Foundation
 
 ## Set the path to the institution logo. This should be the path to the logo
 ## as seen by the target system. Ensure this path exists on the target machine.
-institution_logo = "/gpfs/csfs1/work/mbergemann/conda/freva/web/nsf-logo.png"
+institution_logo = "/gpfs/csfs1/work/gdexdata/freva/web/nsf-logo.png"
 
 ## Set email addresses for contact points for users.
 contacts = "datahelp@ucar.edu"
@@ -469,9 +469,9 @@ guest_tour_result = 105
 # Menu entries consist of three elements: [Label, URL, HTML ID] -> e.g., ["Plugins", "plugins:home", "plugin_menu"].
 menu_entries = [
     ["Data-Browser", "solr:data_browser", "browser_menu"],
-    ["Plugins", "plugins:home", "plugin_menu"],
-    ["History", "history:history", "history_menu"],
-    ["Result-Browser", "history:result_browser", "result_browser_menu"],
+    #["Plugins", "plugins:home", "plugin_menu"],
+    #["History", "history:history", "history_menu"],
+    #["Result-Browser", "history:result_browser", "result_browser_menu"],
     ["Help", "plugins:about", "doc_menu"]
 ]
 

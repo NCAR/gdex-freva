@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/instance: freva-rest-server
     app.kubernetes.io/component: rest-api
     app.kubernetes.io/part-of: freva
-    app.kubernetes.io/version: 2510.1.2
+    app.kubernetes.io/version: 2510.1.0
     app.kubernetes.io/managed-by: ansible
     freva.org/stateful: 'false'
     freva.org/tier: backend
@@ -30,7 +30,7 @@ metadata:
     app.kubernetes.io/instance: freva-rest-server
     app.kubernetes.io/component: rest-api
     app.kubernetes.io/part-of: freva
-    app.kubernetes.io/version: 2510.1.2
+    app.kubernetes.io/version: 2510.1.0
     app.kubernetes.io/managed-by: ansible
     freva.org/stateful: 'false'
     freva.org/tier: backend
@@ -47,7 +47,7 @@ spec:
         app.kubernetes.io/instance: freva-rest-server
         app.kubernetes.io/component: rest-api
         app.kubernetes.io/part-of: freva
-        app.kubernetes.io/version: 2510.1.2
+        app.kubernetes.io/version: 2510.1.0
         app.kubernetes.io/managed-by: ansible
         freva.org/stateful: 'false'
         freva.org/tier: backend
@@ -55,7 +55,7 @@ spec:
       securityContext: { fsGroup: 0 }
       containers:
         - name: rest
-          image: ghcr.io/freva-org/freva-rest-api:2510.1.2
+          image: ghcr.io/freva-org/freva-rest-api:2510.1.0
           imagePullPolicy: IfNotPresent
           ports: [{ containerPort: 7777, name: http }]
           resources: {'limits': {'cpu': '1000m', 'memory': '1Gi'}, 'requests': {'cpu': '600m', 'memory': '512Mi'}}
@@ -82,3 +82,7 @@ spec:
               valueFrom: {secretKeyRef: {name: freva-secrets, key: FREVA_REST_DB_PASSWORD } }
             - {name: API_MONGO_DB, value: "search_stats" }
             - {name: API_SERVICES, value: "databrowser,stacapi,zarr-stream"}
+          readinessProbe:
+            httpGet: {path: "/api/freva-nextgen/ping", port: 7777 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
