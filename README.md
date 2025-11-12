@@ -137,10 +137,10 @@ for f in $(ls freva/*.yaml); do kubectl apply -f "$f"; sleep 2;done
 ### Secrets
 
 Except for the **master password**, all other credentials are auto-generated.
-Apply the `freva/02-secrets.yaml` file only once.
+Apply the `freva/01-secrets.yaml` file only once.
 
 > [!IMPORTANT]
-> Keep the generated `freva/02-secrets.yaml` file stored securely outside of
+> Keep the generated `freva/01-secrets.yaml` file stored securely outside of
 > Git.
 
 ---
