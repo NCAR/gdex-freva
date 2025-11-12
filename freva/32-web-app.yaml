@@ -107,7 +107,7 @@ spec:
             - {name: SERVER_ROOT, value: "/srv/static"}
             - {name: VAULT_HOST, value: "vault-server:5002"}
             - {name: FREVA_REST_HOST, value: "freva-rest-server:7777"}
-            - {name: EVALUATION_SYSTEM_CONFIG_FILE, value: "/gpfs/csfs1/work/gdexdata/freva/freva/evaluation_system.conf"}
+            - {name: EVALUATION_SYSTEM_CONFIG_FILE, value: "/gpfs/csfs1/work/gdexdata/freva/evaluation_system.conf"}
             - {name: CHATBOT_HOST, value: "localhost"}
             - {name: WEB_SERVER_NAME, value: "127.0.0.1"}
             - {name: WEB_SERVER_PORT, value: "8000"}
@@ -130,7 +130,7 @@ spec:
           resources: {'limits': {'cpu': '1600m', 'memory': '2Gi'}, 'requests': {'cpu': '600m', 'memory': '1Gi'}}
           env:
             - name: EVALUATION_SYSTEM_CONFIG_FILE
-              value: "/gpfs/csfs1/work/gdexdata/freva/freva/evaluation_system.conf"
+              value: "/gpfs/csfs1/work/gdexdata/freva/evaluation_system.conf"
             - name: DJANGO_SUPERUSER_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -139,7 +139,7 @@ spec:
             - name: ALLOWED_HOSTS
               value: "freva-httpd,freva.k8s.ucar.edu,localhost,www.freva.k8s.ucar.edu"
             - name: FREVA_WEB_CONFIG_FILE
-              value: "/gpfs/csfs1/work/gdexdata/freva/freva/web/freva_web_conf.toml"
+              value: "/gpfs/csfs1/work/gdexdata/freva/web/freva_web_conf.toml"
             - name: SCHEDULER_HOST
               value: "caspar.hpc.ucar.edu"
             - name: CSRF_TRUSTED_ORIGINS
