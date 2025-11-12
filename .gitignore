@@ -1,0 +1,3 @@
+playbooks/build
+playbooks/vault-pass.txt
+freva/01-secrets.yaml

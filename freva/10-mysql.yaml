@@ -1,0 +1,83 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database-server
+  namespace: freva
+  labels:
+    app: database-server
+    app.kubernetes.io/name: freva
+    app.kubernetes.io/instance: database-server
+    app.kubernetes.io/component: web-app
+    app.kubernetes.io/part-of: freva
+    app.kubernetes.io/version: 9.3.0
+    app.kubernetes.io/managed-by: ansible
+    freva.org/stateful: 'true'
+    freva.org/tier: database
+spec:
+  type: ClusterIP
+  selector:
+    app: database-server
+  ports:
+    - port: 3306
+      targetPort: 3306
+      name: mysql
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: database-server
+  namespace: freva
+  labels:
+    app: database-server
+    app.kubernetes.io/name: freva
+    app.kubernetes.io/instance: database-server
+    app.kubernetes.io/component: web-app
+    app.kubernetes.io/part-of: freva
+    app.kubernetes.io/version: 9.3.0
+    app.kubernetes.io/managed-by: ansible
+    freva.org/stateful: 'true'
+    freva.org/tier: database
+spec:
+  serviceName: database-server
+  replicas: 1
+  selector: { matchLabels: { app: database-server } }
+  template:
+    metadata:
+      name: database-server
+      namespace: freva
+      labels:
+        app: database-server
+        app.kubernetes.io/name: freva
+        app.kubernetes.io/instance: database-server
+        app.kubernetes.io/component: web-app
+        app.kubernetes.io/part-of: freva
+        app.kubernetes.io/version: 9.3.0
+        app.kubernetes.io/managed-by: ansible
+        freva.org/stateful: 'true'
+        freva.org/tier: database
+    spec:
+      securityContext: { fsGroup: 0 }
+      containers:
+        - name: mysql
+          image: ghcr.io/freva-org/freva-mysql:9.3.0
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 3306, name: mysql }]
+          resources: {'limits': {'cpu': '2', 'memory': '4Gi'}, 'requests': {'cpu': '500m', 'memory': '2Gi'}}
+          env:
+            - name: ROOT_PW
+              valueFrom: { secretKeyRef: { name: freva-secrets, key: MYSQL_ROOT_PASSWORD } }
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom: { secretKeyRef: { name: freva-secrets, key: MYSQL_ROOT_PASSWORD } }
+            - { name: MYSQL_USER, value: "freva" }
+            - name: MYSQL_PASSWORD
+              valueFrom: { secretKeyRef: { name: freva-secrets, key: MYSQL_PASSWORD } }
+            - { name: MYSQL_DATABASE, value: "frevadb" }
+            - { name: HOST, value: "freva-db.k8s.ucar.edu" }
+            - { name: PROJECT, value: "freva" }
+          volumeMounts:
+            - { name: db-data, mountPath: /data/db }
+      volumes:
+        - name: db-data
+          persistentVolumeClaim: { claimName: db-data }

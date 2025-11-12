@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault-server
+  namespace: freva
+  labels:
+    app: vault-server
+    app.kubernetes.io/name: freva
+    app.kubernetes.io/instance: vault-server
+    app.kubernetes.io/component: web-app
+    app.kubernetes.io/part-of: freva
+    app.kubernetes.io/version: 2505.0.3
+    app.kubernetes.io/managed-by: ansible
+    freva.org/stateful: 'true'
+    freva.org/tier: backend
+spec:
+  type: ClusterIP
+  selector: { app: vault-server }
+  ports: [{ port: 5002, targetPort: 5002, name: vault }]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vault-server
+  namespace: freva
+  labels:
+    app: vault-server
+    app.kubernetes.io/name: freva
+    app.kubernetes.io/instance: vault-server
+    app.kubernetes.io/component: web-app
+    app.kubernetes.io/part-of: freva
+    app.kubernetes.io/version: 2505.0.3
+    app.kubernetes.io/managed-by: ansible
+    freva.org/stateful: 'true'
+    freva.org/tier: backend
+spec:
+  serviceName: vault-server
+  replicas: 1
+  selector: { matchLabels: { app: vault-server } }
+  template:
+    metadata:
+      name: vault-server
+      namespace: freva
+      labels:
+        app: vault-server
+        app.kubernetes.io/name: freva
+        app.kubernetes.io/instance: vault-server
+        app.kubernetes.io/component: web-app
+        app.kubernetes.io/part-of: freva
+        app.kubernetes.io/version: 2505.0.3
+        app.kubernetes.io/managed-by: ansible
+        freva.org/stateful: 'true'
+        freva.org/tier: backend
+    spec:
+      securityContext: { fsGroup: 0 }
+      containers:
+        - name: vault
+          image: ghcr.io/freva-org/freva-vault:2505.0.3
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 5002, name: vault }]
+          resources: {'limits': {'cpu': '300m', 'memory': '512Mi'}, 'requests': {'cpu': '100m', 'memory': '256Mi'}}
+          env:
+            - name: ROOT_PWD
+              valueFrom: { secretKeyRef: { name: freva-secrets, key: ADMIN_PASSWORD } }
+            - { name: KEY_FILE, value: "/vault/file/keys" }
+          volumeMounts:
+            - { name: vault-data, mountPath: /vault/file }
+      volumes:
+        - name: vault-data
+          persistentVolumeClaim: { claimName: vault-data }

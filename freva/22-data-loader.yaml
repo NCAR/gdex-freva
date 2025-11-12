@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-loader-server
+  namespace: freva
+  labels:
+    app: data-loader-server
+    app.kubernetes.io/name: freva
+    app.kubernetes.io/instance: data-loader-server
+    app.kubernetes.io/component: rest-api
+    app.kubernetes.io/part-of: freva
+    app.kubernetes.io/version: 2510.1.2
+    app.kubernetes.io/managed-by: ansible
+    freva.org/stateful: 'false'
+    freva.org/tier: backend
+
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: data-loader-server } }
+  template:
+    metadata:
+      name: data-loader-server
+      namespace: freva
+      labels:
+        app: data-loader-server
+        app.kubernetes.io/name: freva
+        app.kubernetes.io/instance: data-loader-server
+        app.kubernetes.io/component: rest-api
+        app.kubernetes.io/part-of: freva
+        app.kubernetes.io/version: 2510.1.2
+        app.kubernetes.io/managed-by: ansible
+        freva.org/stateful: 'false'
+        freva.org/tier: backend
+    spec:
+      securityContext: { fsGroup: 0 }
+      containers:
+        - name: data-loader
+          image: ghcr.io/freva-org/freva-data-loader:2510.1.2
+          imagePullPolicy: IfNotPresent
+          resources: {'limits': {'cpu': '2', 'memory': '4Gi'}, 'requests': {'cpu': '500m', 'memory': '1Gi'}}
+          env:
+            - name: API_CONFIG
+              value: /tmp/data-loader.conf
+            - name: API_LOGDIR
+              value: /tmp/data-loader.logs
+            - name: API_REDIS_USER
+              valueFrom:
+                secretKeyRef:
+                  name: freva-secrets
+                  key: REDIS_USERNAME
+            - name: API_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: freva-secrets
+                  key: REDIS_PASSWORD
+            - name: API_REDIS_HOST
+              value: cache-server
+          volumeMounts:
+            - name: data-1
+              mountPath: /gpfs/csfs1/collections/rda
+              readOnly: true
+      volumes:
+        - name: data-1
+          nfs:
+            path: /gpfs/csfs1/collections/rda
+            readOnly: true
+            server: gladedm1.ucar.edu

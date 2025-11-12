@@ -1,0 +1,94 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: freva-external-ingress
+  namespace: freva
+  labels:
+    app.kubernetes.io/part-of: freva
+    app.kubernetes.io/managed-by: ansible
+  annotations:
+    cert-manager.io/cluster-issuer: incommon
+spec:
+  ingressClassName: nginx-external
+  tls:
+    - hosts:
+        - freva.k8s.ucar.edu
+        - www.freva.k8s.ucar.edu
+      secretName: web-cert-secret
+  rules:
+    - host: freva.k8s.ucar.edu
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-reverse-proxy
+                port:
+                  number: 8080
+    - host: www.freva.k8s.ucar.edu
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-reverse-proxy
+                port:
+                  number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: freva-internal-ingress
+  namespace: freva
+  labels:
+    app.kubernetes.io/part-of: freva
+    app.kubernetes.io/managed-by: ansible
+  annotations:
+    cert-manager.io/cluster-issuer: incommon
+spec:
+  ingressClassName: nginx-internal
+
+  rules:
+    - host: freva-api.k8s.ucar.edu
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: freva-rest-server
+                port:
+                  number: 7777
+    - host: freva-solr.k8s.ucar.edu
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: search-server
+                port:
+                  number: 8983
+    - host: freva-vault.k8s.ucar.edu
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: vault-server
+                port:
+                  number: 5002
+    - host: freva-db.k8s.ucar.edu
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: database-server
+                port:
+                  number: 3306
