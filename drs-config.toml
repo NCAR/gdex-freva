@@ -1,0 +1,80 @@
+### ERA5 SFC data
+[era5-sfc]
+root_path = "/gpfs/csfs1/collections/rda/data/d633000/e5.oper.an.sfc"
+fs_type = "posix"
+drs_format = "era5-sfc"
+glob_pattern = "*.nc"
+[era5-sfc.defaults]
+project = "reanalysis"
+product = "era5"
+institute = "ecmwf"
+model = "ifs"
+ensemble = 'na'
+time_aggregation = "mean"
+realm = "atmos"
+time_frequency = "1hr"
+level_type = "sfc"
+
+[drs_settings.dialect.era5-sfc.path_specs]
+dir_parts = ["timestamp"]
+file_parts = ["product_short", "cmor_table", "short_realm", "lev", "var_code", "res_spec", "time"]
+file_sep = "."
+[drs_settings.dialect.era5-sfc.special.variable]
+type = "call"
+call = "'{{ var_code }}'.split('_')[-1]"
+[drs_settings.dialect.era5-sfc.special.experiment]
+type = "call"
+call = "dict(an='analysis', fc='forecast').get('{{ short_realm }}', '{{ short_realm }}')"
+
+### ERA5 pressue level
+[era5-pl]
+root_path = "/gpfs/csfs1/collections/rda/data/d633000/e5.oper.an.pl"
+inherits_from = "era5-sfc"
+
+[era5-pl.defaults]
+time_frequency = "mon"
+
+### ERA5 vertically integrated variables
+[era5-vint]
+root_path = "/gpfs/csfs1/collections/rda/data/d633000/e5.oper.an.vinteg"
+inherits_from = "era5-sfc"
+
+
+## ERA5 accumulated surface
+[era5-sfc-accumu]
+root_path = "/gpfs/csfs1/collections/rda/data/d633000/e5.oper.fc.sfc.accumu"
+inherits_from = "era5-sfc"
+drs_format = "era5-sfc-accumu"
+[era5-sfc-accumu.defaults]
+time_frequency = "day"
+[drs_settings.dialect.era5-sfc-accumu.path_specs]
+file_parts = ["product_short", "cmor_table", "short_realm", "level_type", "time_aggregation", "var_code", "res_spec", "time"]
+file_sep = "."
+
+## ERA5 accumulated intantant
+[era5-sfc-instan]
+root_path = "/gpfs/csfs1/collections/rda/data/d633000/e5.oper.fc.sfc.instan"
+inherits_from = "era5-sfc-accumu"
+
+## ERA5 accumulated avg flux
+[era5-sfc-meanflux]
+root_path = "/gpfs/csfs1/collections/rda/data/d633000/e5.oper.fc.sfc.meanflux"
+inherits_from = "era5-sfc-accumu"
+
+## ERA5 accumulated minmax
+[era5-sfc-minmax]
+root_path = "/gpfs/csfs1/collections/rda/data/d633000/e5.oper.fc.sfc.minmax"
+inherits_from = "era5-sfc-accumu"
+
+## ERA5 invariant
+[era5-invariant]
+root_path = "/gpfs/csfs1/collections/rda/data/d633000/e5.oper.fc.invariant"
+inherits_from = "era5-sfc"
+drs_format = "era5-invariant"
+[era5-invariant.defaults]
+time_frequency = "fx"
+time_aggregation = "invariant"
+[drs_settings.dialect.era5-invariant.path_specs]
+file_parts = ["product_short", "cmor_table", "short_realm", "var_code", "res_spec", "time"]
+file_sep = "."
+#

@@ -5,14 +5,14 @@ metadata:
   name: freva-rest-server
   namespace: freva
   labels:
-    app: freva-freva-rest-server
+    app: freva-rest-server
     app.kubernetes.io/name: freva
     app.kubernetes.io/instance: freva-rest-server
     app.kubernetes.io/component: rest-api
     app.kubernetes.io/part-of: freva
-    app.kubernetes.io/version: 2510.0.0
+    app.kubernetes.io/version: 2510.1.2
     app.kubernetes.io/managed-by: ansible
-    freva.org/stateful: true
+    freva.org/stateful: 'false'
     freva.org/tier: backend
 spec:
   type: ClusterIP
@@ -25,14 +25,14 @@ metadata:
   name: freva-rest-server
   namespace: freva
   labels:
-    app: freva-freva-rest-server
+    app: freva-rest-server
     app.kubernetes.io/name: freva
     app.kubernetes.io/instance: freva-rest-server
     app.kubernetes.io/component: rest-api
     app.kubernetes.io/part-of: freva
-    app.kubernetes.io/version: 2510.0.0
+    app.kubernetes.io/version: 2510.1.2
     app.kubernetes.io/managed-by: ansible
-    freva.org/stateful: true
+    freva.org/stateful: 'false'
     freva.org/tier: backend
 spec:
   replicas: 1
@@ -42,52 +42,43 @@ spec:
       name: freva-rest-server
       namespace: freva
       labels:
-        app: freva-freva-rest-server
+        app: freva-rest-server
         app.kubernetes.io/name: freva
         app.kubernetes.io/instance: freva-rest-server
         app.kubernetes.io/component: rest-api
         app.kubernetes.io/part-of: freva
-        app.kubernetes.io/version: 2510.0.0
+        app.kubernetes.io/version: 2510.1.2
         app.kubernetes.io/managed-by: ansible
-        freva.org/stateful: true
+        freva.org/stateful: 'false'
         freva.org/tier: backend
     spec:
       securityContext: { fsGroup: 0 }
       containers:
         - name: rest
-          image: ghcr.io/freva-org/freva-rest-api:2510.0.0
+          image: ghcr.io/freva-org/freva-rest-api:2510.1.2
           imagePullPolicy: IfNotPresent
           ports: [{ containerPort: 7777, name: http }]
+          resources: {'limits': {'cpu': '1000m', 'memory': '1Gi'}, 'requests': {'cpu': '600m', 'memory': '512Mi'}}
           env:
-            - { name: API_SOLR_CORE, value: "files" }
-            - { name: API_PORT, value: "7777" }
-            - { name: API_PROXY, value: "http://www.freva-delopyment.cloud.dkrz.de" }
-            - { name: COLUMNS, value: "140" }
-            - { name: API_OIDC_CLIENT_ID, value: "freva" }
-            - { name: API_OIDC_DISCOVERY_URL, value: "https://freva-keycloak.cloud.dkrz.de/realms/Freva/.well-known/openid-configuration" }
+            - {name: API_SOLR_CORE, value: "files"}
+            - {name: API_PORT, value: "7777"}
+            - {name: API_PROXY, value: "https://freva.k8s.ucar.edu"}
+            - {name: COLUMNS, value: "140"}
+            - {name: API_OIDC_CLIENT_ID, value: "freva"}
+            - {name: API_OIDC_DISCOVERY_URL, value: "https://freva-keycloak.cloud.dkrz.de/realms/Freva/.well-known/openid-configuration"}
             - name: API_OIDC_CLIENT_SECRET
-              valueFrom: { secretKeyRef: { name: freva-secrets, key: OIDC_CLIENT_SECRET } }
-            - { name: API_OIDC_TOKEN_CLAIMS, value: "scope:regiklim-users" }
+              valueFrom: { secretKeyRef: {name: freva-secrets, key: OIDC_CLIENT_SECRET } }
+            - {name: API_OIDC_TOKEN_CLAIMS, value: ""}
             - name: API_REDIS_USER
-              valueFrom: { secretKeyRef: { name: freva-secrets, key: REDIS_USERNAME } }
+              valueFrom: { secretKeyRef: {name: freva-secrets, key: REDIS_USERNAME } }
             - name: API_REDIS_PASSWORD
-              valueFrom: { secretKeyRef: { name: freva-secrets, key: REDIS_PASSWORD } }
-            - { name: API_REDIS_HOST, value: "cache-server" }
-            - { name: API_LOGDIR, value: "/tmp/logs" }
-            - { name: API_SOLR_HOST, value: "search-server:8983" }
+              valueFrom: {secretKeyRef: {name: freva-secrets, key: REDIS_PASSWORD } }
+            - {name: API_REDIS_HOST, value: "cache-server"}
+            - {name: API_SOLR_HOST, value: "search-server:8983"}
             - name: API_MONGO_USER
-              valueFrom: { secretKeyRef: { name: freva-secrets, key: FREVA_REST_DB_USER } }
-            - { name: API_MONGO_HOST, value: "mongo-server:27017" }
+              valueFrom: {secretKeyRef: {name: freva-secrets, key: FREVA_REST_DB_USER} }
+            - {name: API_MONGO_HOST, value: "mongo-server:27017" }
             - name: API_MONGO_PASSWORD
-              valueFrom: { secretKeyRef: { name: freva-secrets, key: FREVA_REST_DB_PASSWORD } }
-            - { name: API_MONGO_DB, value: "search_stats" }
-            - { name: API_SERVICES, value: "databrowser,stacapi,zarr-stream" }
-          volumeMounts:
-            - { name: freva-rest-logs, mountPath: /tmp/logs }
-          readinessProbe:
-            httpGet: { path: "/", port: 7777 }
-            initialDelaySeconds: 10
-            periodSeconds: 5
-      volumes:
-        - name: freva-rest-logs
-          persistentVolumeClaim: { claimName: freva-rest-logs }
+              valueFrom: {secretKeyRef: {name: freva-secrets, key: FREVA_REST_DB_PASSWORD } }
+            - {name: API_MONGO_DB, value: "search_stats" }
+            - {name: API_SERVICES, value: "databrowser,stacapi,zarr-stream"}
