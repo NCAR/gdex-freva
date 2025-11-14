@@ -26,7 +26,7 @@ call = "'{{ var_code }}'.split('_')[-1]"
 type = "call"
 call = "dict(an='analysis', fc='forecast').get('{{ short_realm }}', '{{ short_realm }}')"
 
-### ERA5 pressue level
+### ERA5 pressure level
 [era5-pl]
 root_path = "/gpfs/csfs1/collections/gdex/data/d633000/e5.oper.an.pl"
 inherits_from = "era5-sfc"

@@ -1,7 +1,7 @@
 # GDEX Freva Deployment
 
 [Freva](https://freva-org.github.io) is a data search and analsys platform
-which is deployd on Cirrus at NCAR.
+which is deployed on Cirrus at NCAR.
 
 This repository provides an initial test setup for deploying Freva on the NCAR
 Kubernetes environment. It serves as a proof of concept to explore and refine
@@ -150,7 +150,7 @@ Apply the `freva/01-secrets.yaml` file only once.
 Metadata indexing is performed using the [metadata-crawler] software. This
 Python package can be installed via Conda or pip.
 
-```consle
+```console
 mamba install -c conda-forge metadata-crawler
 ```
 
