@@ -40,8 +40,7 @@ git clone git@github.com:NCAR/gdex-freva.git
 ### 3. Install the Deployment Software
 
 ```console
-python -m pip install --user -U \
-    git+https://github.com/freva-org/freva-admin.git@kubernetes
+python -m pip install --user -U freva-deployment
 ```
 
 > [!NOTE]
@@ -102,8 +101,7 @@ git pull origin main
 ### 2. Install or Update the Deployment Software
 
 ```console
-python -m pip install --user -U \
-    git+https://github.com/freva-org/freva-admin.git@kubernetes
+python -m pip install --user -U freva-deployment
 ```
 
 > [!NOTE]
