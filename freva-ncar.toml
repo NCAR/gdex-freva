@@ -42,12 +42,12 @@ certs_managed = false
 tls_secret_name = "web-cert-secret"
 
 ## Set the resource allocation for each service.
-## web: Django frontend (2 replicas recommended)
+## web: Django frontend
 [kubernetes.resources.web.requests]
 cpu = "600m"
 memory = "1Gi"
 [kubernetes.resources.web.limits]
-cpu = "1600m"
+cpu = "1000m"
 memory = "2Gi"
 
 ## cache-server: Redis (backing data-loader & web)
@@ -55,29 +55,29 @@ memory = "2Gi"
 cpu = "300m"
 memory = "512Mi"
 [kubernetes.resources.cache-server.limits]
-cpu = "1"
-memory = "2Gi"
+cpu = "500m"
+memory = "1Gi"
 
-## data-loader-server: heavy lifting & serialization (2 replicas recommended)
+## data-loader-server: heavy lifting & serialization
 [kubernetes.resources.data-loader-server.requests]
 cpu = "500m"
 memory = "1Gi"
 [kubernetes.resources.data-loader-server.limits]
-cpu = "2"
-memory = "4Gi"
+cpu = "1200m"
+memory = "3Gi"
 
 ## freva-rest-server: REST API (2 replicas recommended)
 [kubernetes.resources.freva-rest-server.requests]
-cpu = "600m"
+cpu = "400m"
 memory = "512Mi"
 [kubernetes.resources.freva-rest-server.limits]
-cpu = "1000m"
-memory = "1Gi"
+cpu = "600m"
+memory = "512Mi"
 
 ## database-server: MySQL
 [kubernetes.resources.database-server.requests]
-cpu = "500m"
-memory = "2Gi"
+cpu = "800m"
+memory = "1Gi"
 [kubernetes.resources.database-server.limits]
 cpu = "2"
 memory = "4Gi"

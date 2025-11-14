@@ -42,6 +42,11 @@ metadata:
 spec:
   serviceName: database-server
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   selector: { matchLabels: { app: database-server } }
   template:
     metadata:
@@ -64,7 +69,7 @@ spec:
           image: ghcr.io/freva-org/freva-mysql:9.3.0
           imagePullPolicy: IfNotPresent
           ports: [{ containerPort: 3306, name: mysql }]
-          resources: {'limits': {'cpu': '2', 'memory': '4Gi'}, 'requests': {'cpu': '500m', 'memory': '2Gi'}}
+          resources: {'limits': {'cpu': '2', 'memory': '4Gi'}, 'requests': {'cpu': '800m', 'memory': '1Gi'}}
           env:
             - name: ROOT_PW
               valueFrom: { secretKeyRef: { name: freva-secrets, key: MYSQL_ROOT_PASSWORD } }
@@ -78,8 +83,6 @@ spec:
             - { name: PROJECT, value: "freva" }
           volumeMounts:
             - { name: db-data, mountPath: /data/db }
-          readinessProbe: { tcpSocket: { port: 3306 }, initialDelaySeconds: 5, periodSeconds: 5 }
-          livenessProbe:  { tcpSocket: { port: 3306 }, initialDelaySeconds: 10, periodSeconds: 10 }
       volumes:
         - name: db-data
           persistentVolumeClaim: { claimName: db-data }

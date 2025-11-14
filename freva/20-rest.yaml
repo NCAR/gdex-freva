@@ -36,6 +36,11 @@ metadata:
     freva.org/tier: backend
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   selector: { matchLabels: { app: freva-rest-server } }
   template:
     metadata:
@@ -58,7 +63,7 @@ spec:
           image: ghcr.io/freva-org/freva-rest-api:2510.1.2
           imagePullPolicy: IfNotPresent
           ports: [{ containerPort: 7777, name: http }]
-          resources: {'limits': {'cpu': '1000m', 'memory': '1Gi'}, 'requests': {'cpu': '600m', 'memory': '512Mi'}}
+          resources: {'limits': {'cpu': '600m', 'memory': '512Mi'}, 'requests': {'cpu': '400m', 'memory': '512Mi'}}
           env:
             - {name: API_SOLR_CORE, value: "files"}
             - {name: API_PORT, value: "7777"}
@@ -82,7 +87,3 @@ spec:
               valueFrom: {secretKeyRef: {name: freva-secrets, key: FREVA_REST_DB_PASSWORD } }
             - {name: API_MONGO_DB, value: "search_stats" }
             - {name: API_SERVICES, value: "databrowser,stacapi,zarr-stream"}
-          readinessProbe:
-            httpGet: {path: "/api/freva-nextgen/ping", port: 7777 }
-            initialDelaySeconds: 10
-            periodSeconds: 5

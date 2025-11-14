@@ -53,14 +53,14 @@ python -m pip install --user -U \
 ### 4. Run the Deployment
 
 ```console
-deploy-freva-cmd -c freva-ncar.toml -l --skip-version-check \
+deploy-freva cmd -c freva-ncar.toml -l --skip-version-check \
     -t core pre-web -g
 ```
 
 To create only the web configuration:
 
 ```console
-deploy-freva-cmd -c freva-ncar.toml -l --skip-version-check \
+deploy-freva cmd -c freva-ncar.toml -l --skip-version-check \
     -t pre-web -g
 cp nsf-logo.png <core.root_dir>/freva/web
 ```

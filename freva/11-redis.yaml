@@ -36,6 +36,11 @@ metadata:
     freva.org/tier: database
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   selector: { matchLabels: { app: cache-server } }
   template:
     metadata:
@@ -56,7 +61,7 @@ spec:
           image: ghcr.io/freva-org/freva-redis:7.4.0
           imagePullPolicy: IfNotPresent
           ports: [{ containerPort: 6379, name: redis }]
-          resources: {'limits': {'cpu': '1', 'memory': '2Gi'}, 'requests': {'cpu': '300m', 'memory': '512Mi'}}
+          resources: {'limits': {'cpu': '500m', 'memory': '1Gi'}, 'requests': {'cpu': '300m', 'memory': '512Mi'}}
           env:
             - name: REDIS_USERNAME
               valueFrom: { secretKeyRef: { name: freva-secrets, key: REDIS_USERNAME } }
